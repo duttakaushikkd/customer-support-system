@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTickets, mapBackendTicket, Ticket } from "../api";
 
-const MAILTO = "support@example.com";
-
 export default function Portal() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [error, setError] = useState("");
@@ -16,11 +14,7 @@ export default function Portal() {
   return (
     <div className="card">
       <h2>Customer Portal</h2>
-      <p className="muted">Your tickets across chat, portal, and email.</p>
-      <p>
-        Prefer email?{" "}
-        <a href={`mailto:${MAILTO}?subject=Support%20request`}>Open your mail app</a> to {MAILTO}.
-      </p>
+      <p className="muted">Your tickets from live chat and the portal.</p>
       {error && <p className="error">{error}</p>}
       <table>
         <thead>

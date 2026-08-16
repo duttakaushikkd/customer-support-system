@@ -1,16 +1,4 @@
 services:
-  mailpit:
-    image: axllent/mailpit:v1.21
-    restart: unless-stopped
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-      - "1143:1143"
-    environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: "1"
-      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
-      MP_ENABLE_IMAP: "true"
-
   backend:
     build:
       context: ./backend
@@ -19,30 +7,6 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    environment:
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
-    depends_on:
-      - mailpit
-
-  email-worker:
-    build:
-      context: ./email-worker
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      BACKEND_URL: http://backend:8000
-      IMAP_HOST: mailpit
-      IMAP_PORT: "1143"
-      IMAP_USER: support@example.com
-      IMAP_PASSWORD: anything
-      MAILPIT_API: http://mailpit:8025
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
-    depends_on:
-      - backend
-      - mailpit
 
   frontend:
     build:

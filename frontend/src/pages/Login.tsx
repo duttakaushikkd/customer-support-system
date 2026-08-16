@@ -6,6 +6,7 @@ import { saveSession } from "../auth";
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -41,7 +42,7 @@ export default function Login() {
     try {
       const res =
         mode === "register"
-          ? await register(username, password, displayName)
+          ? await register(username, email, password, displayName)
           : await login(username, password);
       storeAndGo(res);
     } catch (err) {
@@ -76,10 +77,23 @@ export default function Login() {
           />
         </label>
         {mode === "register" && (
-          <label>
-            Display name (optional)
-            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="How we should greet you" />
-          </label>
+          <>
+            <label>
+              Email
+              <input
+                type="email"
+                value={email}
+                autoComplete="email"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+              />
+            </label>
+            <label>
+              Display name (optional)
+              <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="How we should greet you" />
+            </label>
+          </>
         )}
         <label>
           Password

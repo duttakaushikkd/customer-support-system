@@ -7,11 +7,5 @@
       "maxDuration": 60,
       "includeFiles": "backend/**"
     }
-  },
-  "crons": [
-    {
-      "path": "/api/email-poll",
-      "schedule": "0 12 * * *"
-    }
-  ]
+  }
 }

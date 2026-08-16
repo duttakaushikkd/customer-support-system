@@ -1,9 +1,35 @@
+import json
+import time
 from datetime import datetime, timezone
 from typing import Any
 
 from pymongo import ASCENDING, DESCENDING, MongoClient, ReturnDocument
+from pymongo.errors import OperationFailure
 
 from app.config import settings
+
+_DEBUG_LOG = "/Users/kaushikdutta/Documents/GitHub/customer-support-system/.cursor/debug-164638.log"
+
+
+def _agent_log(hypothesis_id: str, location: str, message: str, data: dict[str, Any]) -> None:
+    # #region agent log
+    payload = {
+        "sessionId": "164638",
+        "runId": "post-fix",
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "message": message,
+        "data": data,
+        "timestamp": int(time.time() * 1000),
+    }
+    line = json.dumps(payload)
+    try:
+        with open(_DEBUG_LOG, "a", encoding="utf-8") as handle:
+            handle.write(line + "\n")
+    except OSError:
+        pass
+    print(line, flush=True)
+    # #endregion
 
 _client: MongoClient | None = None
 
@@ -42,16 +68,94 @@ def kb_articles():
     return db()["kb_articles"]
 
 
+def _ensure_index(collection, keys, **kwargs) -> str:
+    name = collection.create_index(keys, **kwargs)
+    return name
+
+
+def _index_options_match(info: dict[str, Any], unique: bool, sparse: bool) -> bool:
+    return bool(info.get("unique")) == unique and bool(info.get("sparse")) == sparse
+
+
 def ensure_indexes() -> None:
-    tickets().create_index("ticket_id", unique=True)
-    tickets().create_index("ticket_number", unique=True)
-    tickets().create_index([("updated_at", DESCENDING)])
-    tickets().create_index("customer_id")
-    tickets().create_index("status")
-    users().create_index("email", unique=True, sparse=True)
-    users().create_index("username", unique=True, sparse=True)
-    audit_log().create_index([("ticket_id", ASCENDING), ("at", DESCENDING)])
-    kb_articles().create_index("article_id", unique=True)
+    specs: list[tuple[Any, Any, dict[str, Any]]] = [
+        (tickets(), "ticket_id", {"unique": True}),
+        (tickets(), "ticket_number", {"unique": True}),
+        (tickets(), [("updated_at", DESCENDING)], {}),
+        (tickets(), "customer_id", {}),
+        (tickets(), "status", {}),
+        (users(), "email", {"unique": True, "sparse": True}),
+        (users(), "username", {"unique": True, "sparse": True}),
+        (audit_log(), [("ticket_id", ASCENDING), ("at", DESCENDING)], {}),
+        (kb_articles(), "article_id", {"unique": True}),
+    ]
+    for collection, keys, options in specs:
+        unique = bool(options.get("unique"))
+        sparse = bool(options.get("sparse"))
+        existing = collection.index_information()
+        key_tuple = ((keys, 1),) if isinstance(keys, str) else tuple(keys)
+        matched_name = None
+        for name, info in existing.items():
+            if name == "_id_":
+                continue
+            if tuple(info.get("key") or ()) == key_tuple:
+                matched_name = name
+                same = _index_options_match(info, unique, sparse)
+                # #region agent log
+                _agent_log(
+                    "A",
+                    "mongo.py:ensure_indexes",
+                    "found existing index for key",
+                    {
+                        "collection": collection.name,
+                        "index": name,
+                        "unique": bool(info.get("unique")),
+                        "sparse": bool(info.get("sparse")),
+                        "wanted_unique": unique,
+                        "wanted_sparse": sparse,
+                        "options_match": same,
+                    },
+                )
+                # #endregion
+                if same:
+                    break
+                collection.drop_index(name)
+                matched_name = None
+                # #region agent log
+                _agent_log(
+                    "A",
+                    "mongo.py:ensure_indexes",
+                    "dropped incompatible index",
+                    {"collection": collection.name, "index": name},
+                )
+                # #endregion
+                break
+        if matched_name:
+            continue
+        try:
+            created = _ensure_index(collection, keys, **options)
+            # #region agent log
+            _agent_log(
+                "B",
+                "mongo.py:ensure_indexes",
+                "created index",
+                {"collection": collection.name, "index": created, "options": options},
+            )
+            # #endregion
+        except OperationFailure as exc:
+            # #region agent log
+            _agent_log(
+                "C",
+                "mongo.py:ensure_indexes",
+                "create_index failed",
+                {
+                    "collection": collection.name,
+                    "code": getattr(exc, "code", None),
+                    "error": str(exc)[:300],
+                },
+            )
+            # #endregion
+            raise
 
 
 def next_ticket_number() -> str:

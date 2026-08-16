@@ -19,19 +19,10 @@ class Settings(BaseSettings):
 
     jwt_secret: str = "dev-change-me-please"
     jwt_expire_minutes: int = 480
-    email_intake_webhook_secret: str = "dev-webhook-secret"
-    cron_secret: str = "dev-cron-secret"
 
     max_turns: int = 3
     confidence_floor: float = 0.5
     rag_confidence_floor: float = 0.45
-
-    smtp_host: str = "localhost"
-    smtp_port: int = 1025
-    smtp_user: str = ""
-    smtp_password: str = ""
-    smtp_from: str = "support@example.com"
-    support_mailto: str = "support@example.com"
 
     cors_origins: str = "*"
 

@@ -4,7 +4,7 @@ Multi-agent customer support system from `docs/architecture-diagram.drawio`, imp
 
 ## Architecture
 
-Customers reach the same FastAPI gateway through **Live Chat**, the **Customer Portal**, or **email**. The orchestrator runs Intake → Triage → RAG → Resolver → Critic → Manager. High-confidence tickets go to the Action agent; low confidence or a fired guardrail goes to the Admin Dashboard human queue.
+Customers reach the same FastAPI gateway through **Live Chat** or the **Customer Portal**. The orchestrator runs Intake → Triage → RAG → Resolver → Critic → Manager. High-confidence tickets go to the Action agent; low confidence or a fired guardrail goes to the Admin Dashboard human queue.
 
 | Diagram | This repo |
 |---|---|
@@ -12,7 +12,6 @@ Customers reach the same FastAPI gateway through **Live Chat**, the **Customer P
 | Azure AI Search | MongoDB Atlas `kb_articles` (embeddings + cosine search) |
 | Cosmos DB | MongoDB Atlas (`tickets`, `auditLog`) |
 | Entra / MSAL | Local JWT login |
-| Logic App + Outlook | `POST /api/email-intake` + Vercel Cron `/api/email-poll` |
 | Application Insights | Structured JSON logs |
 
 ## Deploy on Vercel
@@ -24,8 +23,8 @@ Customers reach the same FastAPI gateway through **Live Chat**, the **Customer P
 
 5. Deploy. Open the Vercel URL and sign in:
 
-- `customer@example.com` / `customer123`
-- `admin@example.com` / `admin123`
+- username `customer` / `customer123`
+- username `admin` / `admin123`
 
 Hobby plan functions time out at 10s; the full LLM pipeline often needs **Pro** (`maxDuration` is set to 60s).
 
@@ -49,21 +48,11 @@ Recommended:
 | Name | Example |
 |---|---|
 | `JWT_EXPIRE_MINUTES` | `480` |
-| `EMAIL_INTAKE_WEBHOOK_SECRET` | random string |
-| `CRON_SECRET` | random string |
 | `MAX_TURNS` | `3` |
 | `CONFIDENCE_FLOOR` | `0.5` |
 | `RAG_CONFIDENCE_FLOOR` | `0.45` |
 | `CORS_ORIGINS` | `*` |
 | `VITE_API_URL` | empty on Vercel |
-| `SUPPORT_MAILTO` | `support@example.com` |
-
-Optional email:
-
-| Name | Notes |
-|---|---|
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | outbound replies |
-| `IMAP_HOST` / `IMAP_PORT` / `IMAP_USER` / `IMAP_PASSWORD` | Vercel cron inbox poll |
 
 Vercel treats this repo as a FastAPI app, so the Vite build is copied into `backend/static` and the API serves the SPA (same origin as `/health`, `/auth/login`, `/api/chat`, `/tickets`).
 
@@ -86,8 +75,6 @@ uvicorn app.main:app --reload --port 8000
 
 cd ../frontend && npm install && npm run dev
 ```
-
-Optional Mailpit for local email: `docker compose up mailpit email-worker`.
 
 ## Guardrails (deterministic)
 

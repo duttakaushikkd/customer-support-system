@@ -1,26 +1,24 @@
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 
-from app.api.deps import get_current_user, require_admin, verify_email_webhook_secret
-from app.config import settings
+from app.api.deps import get_current_user, require_admin
 from app.models.ticket_state import TicketState
 from app.orchestrator import resume_after_human, run_pipeline
 from app.services import mongo
-from app.services.smtp import send_reply
 
 router = APIRouter()
 
 
 class LoginRequest(BaseModel):
-    username: str | None = None
-    email: str | None = None
+    username: str
     password: str
 
 
 class RegisterRequest(BaseModel):
     username: str
+    email: EmailStr
     password: str
     display_name: str | None = None
 
@@ -29,12 +27,6 @@ class ChatRequest(BaseModel):
     message: str
     user_id: str | None = None
     channel: str = "chat"
-
-
-class EmailIntakeRequest(BaseModel):
-    from_email: EmailStr
-    subject: str = ""
-    body: str
 
 
 class DecisionRequest(BaseModel):
@@ -68,7 +60,7 @@ def register(payload: RegisterRequest) -> dict:
     from app.services.auth import auth_response, register_user
 
     try:
-        user = register_user(payload.username, payload.password, payload.display_name)
+        user = register_user(payload.username, payload.password, str(payload.email), payload.display_name)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return auth_response(user)
@@ -78,10 +70,7 @@ def register(payload: RegisterRequest) -> dict:
 def login(payload: LoginRequest) -> dict:
     from app.services.auth import auth_response, authenticate
 
-    identifier = payload.username or payload.email
-    if not identifier:
-        raise HTTPException(status_code=400, detail="Username is required")
-    user = authenticate(identifier, payload.password)
+    user = authenticate(payload.username, payload.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return auth_response(user)
@@ -93,32 +82,13 @@ def chat(payload: ChatRequest, user: Annotated[dict, Depends(get_current_user)])
     state = TicketState(
         channel="chat" if payload.channel in {"chat", "portal"} else "chat",
         customer_id=customer_id,
-        customer_email=user.get("sub"),
+        customer_email=user.get("email"),
         message=payload.message,
         subject=payload.message[:80],
     )
     if payload.channel == "portal":
         state.channel = "portal"
     state = run_pipeline(state)
-    return _build_ticket_response(state)
-
-
-@router.post("/api/email-intake", dependencies=[Depends(verify_email_webhook_secret)])
-def email_intake(payload: EmailIntakeRequest) -> dict:
-    state = TicketState(
-        channel="email",
-        customer_id=payload.from_email,
-        customer_email=payload.from_email,
-        subject=payload.subject,
-        message=payload.body,
-        reply_subject=f"Re: {payload.subject}" if payload.subject else None,
-    )
-    state = run_pipeline(state)
-    body = state.resolution or "We received your request."
-    try:
-        send_reply(payload.from_email, state.reply_subject or f"Re: {payload.subject}", body)
-    except Exception:
-        pass
     return _build_ticket_response(state)
 
 
@@ -167,41 +137,10 @@ def post_decision(
         raise HTTPException(status_code=404, detail="Ticket not found")
     state = TicketState.model_validate(doc)
     state = resume_after_human(state, payload.decision)
-    if state.channel == "email" and state.customer_email and state.resolution:
-        try:
-            send_reply(
-                state.customer_email,
-                state.reply_subject or f"Re: {state.subject}",
-                state.resolution,
-            )
-        except Exception:
-            pass
     return _build_ticket_response(state)
 
 
 @router.get("/health")
 @router.get("/api/health")
 def health() -> dict:
-    return {"ok": True, "mailto": settings.support_mailto}
-
-
-def _verify_cron(
-    request: Request,
-    authorization: Annotated[str | None, Header()] = None,
-    x_webhook_secret: Annotated[str | None, Header(alias="X-Webhook-Secret")] = None,
-) -> None:
-    if request.headers.get("x-vercel-cron") == "1":
-        return
-    token = None
-    if authorization and authorization.lower().startswith("bearer "):
-        token = authorization.split(" ", 1)[1]
-    if token == settings.cron_secret or x_webhook_secret == settings.email_intake_webhook_secret:
-        return
-    raise HTTPException(status_code=401, detail="Invalid cron secret")
-
-
-@router.api_route("/api/email-poll", methods=["GET", "POST"])
-def email_poll(_ok: Annotated[None, Depends(_verify_cron)]) -> dict:
-    from app.services.email_poll import poll_once
-
-    return poll_once()
+    return {"ok": True}

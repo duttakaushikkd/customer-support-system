@@ -25,10 +25,18 @@ def bootstrap() -> None:
     global _bootstrapped
     if _bootstrapped:
         return
+    # #region agent log
+    from app.services.mongo import _agent_log
+
+    _agent_log("D", "main.py:bootstrap", "bootstrap start", {"already": _bootstrapped})
+    # #endregion
     mongo.ensure_indexes()
     seed_users()
     seed_kb_if_needed(KB_DIR)
     _bootstrapped = True
+    # #region agent log
+    _agent_log("D", "main.py:bootstrap", "bootstrap complete", {"ok": True})
+    # #endregion
 
 
 def static_dir() -> Path | None:

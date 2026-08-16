@@ -105,7 +105,7 @@ export async function login(username: string, password: string) {
   }>("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }, false);
 }
 
-export async function register(username: string, password: string, display_name?: string) {
+export async function register(username: string, email: string, password: string, display_name?: string) {
   return request<{
     access_token: string;
     role: "admin" | "customer";
@@ -116,7 +116,7 @@ export async function register(username: string, password: string, display_name?
     "/auth/register",
     {
       method: "POST",
-      body: JSON.stringify({ username, password, display_name: display_name || undefined }),
+      body: JSON.stringify({ username, email, password, display_name: display_name || undefined }),
     },
     false
   );

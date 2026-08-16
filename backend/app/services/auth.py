@@ -72,17 +72,26 @@ def seed_users() -> None:
         )
 
 
-def register_user(username: str, password: str, display_name: str | None = None) -> dict:
+def normalize_email(email: str) -> str:
+    return email.strip().lower()
+
+
+def register_user(username: str, password: str, email: str, display_name: str | None = None) -> dict:
     username = normalize_username(username)
+    email = normalize_email(email)
     if not USERNAME_RE.match(username):
         raise ValueError("Username must be 3–32 letters, numbers, dots, underscores, or hyphens")
     if len(password) < 6:
         raise ValueError("Password must be at least 6 characters")
+    if not email or "@" not in email:
+        raise ValueError("A valid email address is required")
     if mongo.users().find_one({"username": username}):
         raise ValueError("Username already taken")
+    if mongo.users().find_one({"email": email}):
+        raise ValueError("Email already registered")
     doc = {
         "username": username,
-        "email": None,
+        "email": email,
         "password_hash": _hash_password(password),
         "role": "customer",
         "display_name": (display_name or username).strip() or username,
@@ -90,13 +99,13 @@ def register_user(username: str, password: str, display_name: str | None = None)
     try:
         mongo.users().insert_one(doc)
     except DuplicateKeyError as exc:
-        raise ValueError("Username already taken") from exc
+        raise ValueError("Username or email already taken") from exc
     return doc
 
 
 def authenticate(identifier: str, password: str) -> dict | None:
     ident = identifier.strip().lower()
-    user = mongo.users().find_one({"$or": [{"username": ident}, {"email": ident}]})
+    user = mongo.users().find_one({"username": ident})
     if not user:
         return None
     if not _verify_password(password, user["password_hash"]):
@@ -110,6 +119,7 @@ def create_token(user: dict) -> str:
     payload = {
         "sub": str(username),
         "username": username,
+        "email": user.get("email"),
         "role": user.get("role"),
         "name": user.get("display_name") or username,
         "exp": expire,
