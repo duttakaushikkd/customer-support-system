@@ -1,0 +1,14 @@
+.env
+.env.local
+.env*.local
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.DS_Store
+frontend/dist/
+backend/static/
+*.log
+.vercel
+.python-version

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build && rm -rf backend/static && mkdir -p backend/static && cp -R frontend/dist/. backend/static/",
+  "installCommand": "npm --prefix frontend install && pip install -r requirements.txt",
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "includeFiles": "backend/**"
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/email-poll",
+      "schedule": "0 12 * * *"
+    }
+  ]
+}

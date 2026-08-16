@@ -1,0 +1,482 @@
+<mxfile host="app.diagrams.net" agent="FDE-Masterclass" pages="5">
+  <diagram name="1. System Architecture Overview" id="page1-overview">
+    <mxGraphModel dx="1391" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="o-customer" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" value="Customer" vertex="1">
+          <mxGeometry height="50" width="180" x="560" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="o-chatui" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" value="Live Chat UI" vertex="1">
+          <mxGeometry height="50" width="170" x="200" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="o-portalui" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" value="Customer Portal" vertex="1">
+          <mxGeometry height="50" width="170" x="400" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="o-adminui" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" value="Admin Dashboard" vertex="1">
+          <mxGeometry height="50" width="170" x="600" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="o-outlook" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" value="Outlook.com Mailbox&#xa;(umashankarkh@outlook.com)" vertex="1">
+          <mxGeometry height="50" width="220" x="900" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-cust-chat" edge="1" parent="1" source="o-customer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-chatui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-cust-portal" edge="1" parent="1" source="o-customer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-portalui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-cust-admin" edge="1" parent="1" source="o-customer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-adminui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-cust-outlook" edge="1" parent="1" source="o-customer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;fontSize=9;" target="o-outlook" value="mailto: (real, opens&#xa;device email app)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-logicapp" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4472C4;fontColor=#0000CC;fontSize=10;" value="Logic App: fde-email-intake-logicapp&#xa;(When new email arrives -&gt; HTML-to-text&#xa;-&gt; HTTP -&gt; Parse JSON -&gt; Reply to email)" vertex="1">
+          <mxGeometry height="70" width="260" x="880" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-outlook-logicapp" edge="1" parent="1" source="o-outlook" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;fontSize=9;" target="o-logicapp" value="triggers on&#xa;new email">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-gateway" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" value="Backend API Gateway (FastAPI)&#xa;MSAL bearer token (UI) OR&#xa;X-Webhook-Secret (Logic App)" vertex="1">
+          <mxGeometry height="60" width="300" x="470" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-chat-gw" edge="1" parent="1" source="o-chatui" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="o-gateway">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="280" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="o-e-portal-gw" edge="1" parent="1" source="o-portalui" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-logicapp-gw" edge="1" parent="1" source="o-logicapp" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;fontSize=9;" target="o-gateway" value="POST /api/email-intake">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-orch" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" value="Orchestrator (Loop Engine)&#xa;shared TicketState, max_turns cap" vertex="1">
+          <mxGeometry height="50" width="300" x="470" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-gw-orch" edge="1" parent="1" source="o-gateway" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-orch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-intake" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" value="Intake" vertex="1">
+          <mxGeometry height="50" width="120" x="140" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="o-triage" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" value="Triage" vertex="1">
+          <mxGeometry height="50" width="120" x="280" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="o-rag" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" value="RAG" vertex="1">
+          <mxGeometry height="50" width="120" x="420" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="o-resolver" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" value="Resolver" vertex="1">
+          <mxGeometry height="50" width="120" x="560" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="o-critic" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" value="Critic&#xa;(guardrails incl.&#xa;confidence &lt;50%)" vertex="1">
+          <mxGeometry height="70" width="140" x="700" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="o-manager" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" value="Manager" vertex="1">
+          <mxGeometry height="50" width="120" x="860" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-orch-intake" edge="1" parent="1" source="o-orch" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-intake">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-1-2" edge="1" parent="1" source="o-intake" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-triage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-2-3" edge="1" parent="1" source="o-triage" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-rag">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-3-4" edge="1" parent="1" source="o-rag" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-resolver">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-4-5" edge="1" parent="1" source="o-resolver" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-critic">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-5-6" edge="1" parent="1" source="o-critic" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-manager">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-decision" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=10;fontStyle=1;" value="Auto-resolve&#xa;or human?" vertex="1">
+          <mxGeometry height="70" width="140" x="1020" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-mgr-dec" edge="1" parent="1" source="o-manager" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" target="o-decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-action" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" value="Action Agent" vertex="1">
+          <mxGeometry height="50" width="150" x="1230" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="o-humanq" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" value="Human Approval Queue&#xa;(Admin Dashboard)" vertex="1">
+          <mxGeometry height="60" width="150" x="1230" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-dec-action" edge="1" parent="1" source="o-decision" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0E8088;rounded=0;fontSize=9;" target="o-action" value="high confidence,&#xa;no guardrail">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-dec-human" edge="1" parent="1" source="o-decision" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;fontSize=9;" target="o-humanq" value="low confidence (&lt;50%)&#xa;or guardrail fired">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-human-action" edge="1" parent="1" source="o-humanq" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;strokeColor=#000000;rounded=0;fontSize=9;" target="o-action" value="POST /tickets/{id}/decision&#xa;(approved)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-ticketstate" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;dashed=1;" value="TicketState saved to&#xa;Cosmos DB after every step" vertex="1">
+          <mxGeometry height="50" width="300" x="470" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-orch-state" edge="1" parent="1" source="o-orch" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;dashed=1;" target="o-ticketstate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-reply-chat" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=9;dashed=1;" value="Response rendered live&#xa;in chat reasoning trace" vertex="1">
+          <mxGeometry height="50" width="160" x="60" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-action-chatreply" edge="1" parent="1" source="o-action" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;dashed=1;exitX=0;exitY=0.5;entryX=1;entryY=1;" target="o-reply-chat">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-reply-email" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=9;dashed=1;" value="Reply email sent back&#xa;via Logic App (real)" vertex="1">
+          <mxGeometry height="50" width="200" x="1230" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-action-emailreply" edge="1" parent="1" source="o-action" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;dashed=1;" target="o-reply-email">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-emailreply-logicapp" edge="1" parent="1" source="o-reply-email" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;dashed=1;" target="o-logicapp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-openai" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4472C4;fontColor=#0000CC;fontSize=10;" value="Azure OpenAI&#xa;(mini + flagship + embedding)" vertex="1">
+          <mxGeometry height="60" width="220" x="60" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="o-search" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4472C4;fontColor=#0000CC;fontSize=10;" value="Azure AI Search&#xa;(14-article KB index)" vertex="1">
+          <mxGeometry height="60" width="220" x="310" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="o-cosmos" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4472C4;fontColor=#0000CC;fontSize=10;" value="Cosmos DB&#xa;tickets + auditLog containers" vertex="1">
+          <mxGeometry height="60" width="220" x="560" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="o-insights" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4472C4;fontColor=#0000CC;fontSize=10;" value="Application Insights&#xa;+ Log Analytics" vertex="1">
+          <mxGeometry height="60" width="220" x="810" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-orch-openai" edge="1" parent="1" source="o-ticketstate" style="html=1;startArrow=block;endArrow=block;strokeColor=#F4A6A6;strokeWidth=5;fillColor=#F4A6A6;rounded=0;" target="o-openai">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-orch-search" edge="1" parent="1" source="o-ticketstate" style="html=1;startArrow=block;endArrow=block;strokeColor=#F4A6A6;strokeWidth=5;fillColor=#F4A6A6;rounded=0;" target="o-search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-orch-cosmos" edge="1" parent="1" source="o-ticketstate" style="html=1;startArrow=block;endArrow=block;strokeColor=#F4A6A6;strokeWidth=5;fillColor=#F4A6A6;rounded=0;" target="o-cosmos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-gw-insights" edge="1" parent="1" source="o-ticketstate" style="html=1;startArrow=block;endArrow=block;strokeColor=#F4A6A6;strokeWidth=5;fillColor=#F4A6A6;rounded=0;" target="o-insights">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-e-admin-poll" edge="1" parent="1" source="o-adminui" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;startArrow=block;strokeColor=#000000;rounded=0;fontSize=9;dashed=1;exitX=0.5;exitY=1;entryX=1;entryY=0;" target="o-gateway" value="GET /tickets + /tickets/stats&#xa;every 15s (live poll)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o-legend" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;fontColor=#666666;fontSize=9;fontStyle=2;align=left;spacingLeft=6;" value="Rectangle = process/UI step | Parallelogram = external Azure service | Diamond = guardrail decision | Thin arrow = request path | Dashed = persistence/telemetry/reply | Thick pink = live data-plane call" vertex="1">
+          <mxGeometry height="30" width="1300" x="60" y="820" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="2. Live Chat Flow" id="page2-chat">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="c0" />
+        <mxCell id="c1" parent="c0" />
+        <mxCell id="c-1" value="1. Customer types issue&#xa;in Live Chat UI" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry x="340" y="20" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c-2" value="2. MSAL attaches Bearer token&#xa;(acquireTokenSilent)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry x="340" y="120" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c-3" value="3. POST /api/chat&#xa;{message, user_id, channel}" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry x="340" y="220" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c-4" value="4. verify_token() validates&#xa;JWT against Entra JWKS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry x="340" y="320" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c-5" value="5. run_pipeline() -&gt; Intake -&gt; Triage&#xa;-&gt; RAG -&gt; Resolver -&gt; Critic -&gt; Manager" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" vertex="1" parent="c1">
+          <mxGeometry x="320" y="420" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c-6" value="6. _build_ticket_response()&#xa;shapes reasoning_steps,&#xa;resolution, loop_metadata" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry x="330" y="530" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c-7" value="7. Reasoning trace renders live&#xa;(7 agent steps + Loop Engineering panel&#xa;+ ticket type badge + confidence)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry x="300" y="640" width="300" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c-branch" value="Confidence &gt;= 50%&#xa;and no guardrail?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=10;" vertex="1" parent="c1">
+          <mxGeometry x="330" y="750" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c-8a" value="Resolution + ticket number&#xa;shown immediately (auto-resolved)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="c1">
+          <mxGeometry x="120" y="870" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c-8b" value="Holding message shown;&#xa;ticket queued in Admin&#xa;Dashboard approval queue" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="c1">
+          <mxGeometry x="550" y="870" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ce1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-1" target="c-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-2" target="c-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-3" target="c-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-4" target="c-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-5" target="c-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-6" target="c-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="c1" source="c-7" target="c-branch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce8" value="Yes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0E8088;rounded=0;fontSize=9;" edge="1" parent="c1" source="c-branch" target="c-8a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ce9" value="No" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;fontSize=9;" edge="1" parent="c1" source="c-branch" target="c-8b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="3. Email Flow (Logic App)" id="page3-email">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="e0" />
+        <mxCell id="e1" parent="e0" />
+        <mxCell id="e-1" value="1. Customer sends real email to&#xa;umashankarkh@outlook.com&#xa;(via mailto: link or their own email app)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="20" width="300" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e-2" value="2. Logic App trigger:&#xa;When a new email arrives (V2)&#xa;[Outlook.com connector]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="130" width="300" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e-3" value="3. HTML to text&#xa;(strip formatting from Body)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="240" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e-4" value="4. HTTP POST /api/email-intake&#xa;{from_email, subject, body}&#xa;+ X-Webhook-Secret header" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="340" width="300" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e-5" value="5. _verify_email_webhook_secret()&#xa;checks header == EMAIL_INTAKE_WEBHOOK_SECRET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="e1">
+          <mxGeometry x="280" y="450" width="340" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e-6" value="6. TicketState created&#xa;channel=&#39;email&#39;, customer_id=from_email&#xa;-&gt; run_pipeline() (same 8-agent pipeline&#xa;as chat, same guardrails)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="e1">
+          <mxGeometry x="270" y="550" width="360" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e-7" value="7. Response: {ticket_number,&#xa;resolution, reply_subject, ...}" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="660" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e-8" value="8. Parse JSON&#xa;(extract ticket_number, resolution)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="750" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e-9" value="9. Reply to email (V3)&#xa;[Outlook.com connector]&#xa;composes reply with ticket number&#xa;+ resolution text" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="840" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e-10" value="10. Customer receives reply&#xa;with real ticket number (e.g. INC1006)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="e1">
+          <mxGeometry x="300" y="950" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ee1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-1" target="e-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-2" target="e-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-3" target="e-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-4" target="e-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-5" target="e-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-6" target="e-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-7" target="e-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-8" target="e-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="e1" source="e-9" target="e-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-note" value="Steps 2, 3, 9 run inside the Logic App (fde-email-intake-logicapp).&#xa;Steps 4-8 run inside the FastAPI backend (fde-backend-api) - the exact&#xa;same run_pipeline() used by chat, so guardrails and ticket numbering&#xa;are identical across channels." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF6DC;strokeColor=#8A6D00;fontColor=#333333;fontSize=9;align=left;spacingLeft=8;" vertex="1" parent="e1">
+          <mxGeometry x="650" y="340" width="280" height="110" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="4. Guardrails and Human-in-the-loop" id="page4-guardrails">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="g0" />
+        <mxCell id="g1" parent="g0" />
+        <mxCell id="g-start" value="Critic Agent receives:&#xa;draft resolution, resolver_confidence,&#xa;proposed action, RAG citations" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;fontStyle=1;" vertex="1" parent="g1">
+          <mxGeometry x="360" y="20" width="320" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-llm" value="Flagship model reviews:&#xa;approved? reason? requires_human?" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="g1">
+          <mxGeometry x="380" y="130" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e0" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-start" target="g-llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-note" value="Below this point, every check is enforced deterministically in code&#xa;(critic_agent.py) - NOT left to the LLM&#39;s judgment. Any one check&#xa;failing is enough to force human review, regardless of what the&#xa;model above said." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF6DC;strokeColor=#8A6D00;fontColor=#333333;fontSize=9;align=left;spacingLeft=8;" vertex="1" parent="g1">
+          <mxGeometry x="720" y="120" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="g-check1" value="proposed_action ==&#xa;&#39;reset_2fa&#39; ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=9;" vertex="1" parent="g1">
+          <mxGeometry x="40" y="230" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-check2" value="proposed_action ==&#xa;&#39;provision_access&#39; AND&#xa;not approved by LLM?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=9;" vertex="1" parent="g1">
+          <mxGeometry x="230" y="230" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-check3" value="guardrail_flags contains&#xa;&#39;low_rag_confidence&#39; ?&#xa;(RAG confidence &lt; 0.45)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=9;" vertex="1" parent="g1">
+          <mxGeometry x="420" y="230" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-check4" value="resolver_confidence &lt;&#xa;50% ?&#xa;(hard floor, new)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=9;fontStyle=1;" vertex="1" parent="g1">
+          <mxGeometry x="610" y="230" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-check5" value="top KB citation&#39;s&#xa;confidence_tag !=&#xa;&#39;auto_resolve&#39; ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=9;" vertex="1" parent="g1">
+          <mxGeometry x="800" y="230" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-llm" target="g-check1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-llm" target="g-check2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-llm" target="g-check3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-llm" target="g-check4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-llm" target="g-check5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-merge" value="requires_human = true&#xa;if ANY check above fired" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="g1">
+          <mxGeometry x="400" y="350" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;" edge="1" parent="g1" source="g-check1" target="g-merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;" edge="1" parent="g1" source="g-check2" target="g-merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;" edge="1" parent="g1" source="g-check3" target="g-merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;" edge="1" parent="g1" source="g-check4" target="g-merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;" edge="1" parent="g1" source="g-check5" target="g-merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-final" value="requires_human?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="g1">
+          <mxGeometry x="440" y="450" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-merge" target="g-final">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-auto" value="status = &#39;auto_resolved&#39;&#xa;Manager routes to Action Agent&#xa;Resolution delivered immediately" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="g1">
+          <mxGeometry x="150" y="570" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-human" value="status = &#39;pending_human_approval&#39;&#xa;Ticket appears in Admin Dashboard&#xa;Human Safeguard Queue" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="g1">
+          <mxGeometry x="650" y="570" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e12" value="No" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0E8088;rounded=0;fontSize=9;" edge="1" parent="g1" source="g-final" target="g-auto">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e13" value="Yes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;fontSize=9;" edge="1" parent="g1" source="g-final" target="g-human">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-reviewer" value="Human reviewer clicks&#xa;Approve or Reject &amp; Escalate" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="g1">
+          <mxGeometry x="650" y="670" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e14" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-human" target="g-reviewer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-decide" value="decision?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#0000CC;fontSize=10;" vertex="1" parent="g1">
+          <mxGeometry x="700" y="760" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="g1" source="g-reviewer" target="g-decide">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-approved" value="POST /tickets/{id}/decision&#xa;{decision: &#39;approved&#39;}&#xa;-&gt; resume_after_human()&#xa;-&gt; Action Agent executes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="g1">
+          <mxGeometry x="500" y="870" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g-rejected" value="POST /tickets/{id}/decision&#xa;{decision: &#39;rejected&#39;}&#xa;-&gt; Escalation Agent runs&#xa;status = &#39;escalated&#39;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="g1">
+          <mxGeometry x="760" y="870" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e16" value="approved" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0E8088;rounded=0;fontSize=9;" edge="1" parent="g1" source="g-decide" target="g-approved">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g-e17" value="rejected" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#B85450;rounded=0;fontSize=9;" edge="1" parent="g1" source="g-decide" target="g-rejected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="5. Admin Dashboard Live Data Flow" id="page5-dashboard">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="d0" />
+        <mxCell id="d1" parent="d0" />
+        <mxCell id="d-mount" value="Admin Dashboard mounts&#xa;(or &#39;Resume live&#39; clicked)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=11;" vertex="1" parent="d1">
+          <mxGeometry x="380" y="20" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d-timer" value="setInterval every 15 seconds" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="d1">
+          <mxGeometry x="400" y="120" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e0" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-mount" target="d-timer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-token" value="acquireTokenSilent()&#xa;(MSAL, falls back to popup&#xa;only if interaction required)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="d1">
+          <mxGeometry x="380" y="210" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-timer" target="d-token">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-stats" value="GET /tickets/stats&#xa;(unique_users, resolved,&#xa;escalated, not_resolved,&#xa;resolution_rate_pct, by_channel)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="d1">
+          <mxGeometry x="140" y="320" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d-tickets" value="GET /tickets?limit=200&#xa;(full Cosmos DB ticket list,&#xa;every channel, every customer)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="d1">
+          <mxGeometry x="580" y="320" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-token" target="d-stats">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-token" target="d-tickets">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-map" value="mapBackendTicket() converts each&#xa;Cosmos doc -&gt; frontend Ticket shape&#xa;(synthesizes customer, priority,&#xa;relative timestamps, backendTicketId)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="d1">
+          <mxGeometry x="560" y="440" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-tickets" target="d-map">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-render" value="Dashboard re-renders:&#xa;Live Backend Usage card, ticket table&#xa;(with date-range filter), Approvals queue,&#xa;Analytics charts - all from live data" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="d1">
+          <mxGeometry x="300" y="550" width="360" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-stats" target="d-render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-map" target="d-render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-approve" value="Admin clicks Approve / Reject&#xa;in Human Safeguard Queue" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;" vertex="1" parent="d1">
+          <mxGeometry x="300" y="670" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-render" target="d-approve">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-postdecision" value="postHumanDecision(): POST&#xa;/tickets/{backendTicketId}/decision&#xa;then immediately re-syncs&#xa;(no waiting for next 15s tick)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#0000CC;fontSize=10;fontStyle=1;" vertex="1" parent="d1">
+          <mxGeometry x="300" y="770" width="360" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;" edge="1" parent="d1" source="d-approve" target="d-postdecision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-e9" value="loops back" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#000000;rounded=0;dashed=1;fontSize=8;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="d1" source="d-postdecision" target="d-stats">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d-note" value="Without this, Approve/Reject only updated local browser state -&#xa;the next 15s poll would silently revert it back to &#39;Pending Approval&#39;&#xa;since Cosmos DB still showed the old status. Fixed by actually calling&#xa;the real decision endpoint before re-syncing." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF6DC;strokeColor=#8A6D00;fontColor=#333333;fontSize=9;align=left;spacingLeft=8;" vertex="1" parent="d1">
+          <mxGeometry x="700" y="670" width="260" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
