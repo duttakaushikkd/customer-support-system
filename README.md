@@ -20,25 +20,50 @@ Customers reach the same FastAPI gateway through **Live Chat**, the **Customer P
 1. In [MongoDB Atlas](https://cloud.mongodb.com) → **Network Access**, add `0.0.0.0/0` (Vercel serverless IPs are not static).
 2. **Rotate the database password** if it was ever pasted into chat or committed, then use the new URI only as an environment variable.
 3. Import this GitHub repo in [Vercel](https://vercel.com/new) (root directory = repo root).
-4. Set these **Environment Variables** (Production):
-
-| Name | Value |
-|---|---|
-| `MONGO_URI` | your `mongodb+srv://...` Atlas URI |
-| `MONGO_DB` | `customer_support` |
-| `JWT_SECRET` | long random string |
-| `EMAIL_INTAKE_WEBHOOK_SECRET` | random string |
-| `CRON_SECRET` | random string |
-| `OPENAI_API_KEY` | optional; without a real key the app uses the mock LLM |
-| `OPENAI_BASE_URL` | e.g. `https://api.openai.com/v1` or Groq/vLLM |
-| `VITE_API_URL` | leave **empty** (UI and API share the Vercel domain) |
+4. Set environment variables (see the table below). `OPENAI_API_KEY` is required.
 
 5. Deploy. Open the Vercel URL and sign in:
 
 - `customer@example.com` / `customer123`
 - `admin@example.com` / `admin123`
 
-Hobby plan functions time out at 10s; the full LLM pipeline often needs **Pro** (`maxDuration` is set to 60s). Mock LLM mode is fast enough for Hobby.
+Hobby plan functions time out at 10s; the full LLM pipeline often needs **Pro** (`maxDuration` is set to 60s).
+
+## Environment variables
+
+Required:
+
+| Name | Example |
+|---|---|
+| `OPENAI_API_KEY` | `sk-...` from [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+| `OPENAI_BASE_URL` | `https://api.openai.com/v1` |
+| `MODEL_MINI` | `gpt-4o-mini` |
+| `MODEL_FLAGSHIP` | `gpt-4o` |
+| `MODEL_EMBEDDING` | `text-embedding-3-small` |
+| `MONGO_URI` | Atlas `mongodb+srv://...` URI |
+| `MONGO_DB` | `customer_support` |
+| `JWT_SECRET` | long random string |
+
+Recommended:
+
+| Name | Example |
+|---|---|
+| `JWT_EXPIRE_MINUTES` | `480` |
+| `EMAIL_INTAKE_WEBHOOK_SECRET` | random string |
+| `CRON_SECRET` | random string |
+| `MAX_TURNS` | `3` |
+| `CONFIDENCE_FLOOR` | `0.5` |
+| `RAG_CONFIDENCE_FLOOR` | `0.45` |
+| `CORS_ORIGINS` | `*` |
+| `VITE_API_URL` | empty on Vercel |
+| `SUPPORT_MAILTO` | `support@example.com` |
+
+Optional email:
+
+| Name | Notes |
+|---|---|
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | outbound replies |
+| `IMAP_HOST` / `IMAP_PORT` / `IMAP_USER` / `IMAP_PASSWORD` | Vercel cron inbox poll |
 
 Vercel treats this repo as a FastAPI app, so the Vite build is copied into `backend/static` and the API serves the SPA (same origin as `/health`, `/auth/login`, `/api/chat`, `/tickets`).
 

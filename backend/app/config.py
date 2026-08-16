@@ -33,7 +33,6 @@ class Settings(BaseSettings):
     smtp_from: str = "support@example.com"
     support_mailto: str = "support@example.com"
 
-    mock_llm: bool = False
     cors_origins: str = "*"
 
 
