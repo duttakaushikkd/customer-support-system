@@ -2,7 +2,8 @@ const TOKEN_KEY = "css_token";
 const USER_KEY = "css_user";
 
 export type SessionUser = {
-  email: string;
+  username: string;
+  email?: string | null;
   role: "admin" | "customer";
   name: string;
   access_token: string;
@@ -23,7 +24,12 @@ export function getSession(): SessionUser | null {
   const token = localStorage.getItem(TOKEN_KEY);
   if (!raw || !token) return null;
   try {
-    return { ...JSON.parse(raw), access_token: token };
+    const parsed = JSON.parse(raw);
+    return {
+      ...parsed,
+      username: parsed.username || parsed.email,
+      access_token: token,
+    };
   } catch {
     return null;
   }

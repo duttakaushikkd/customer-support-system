@@ -23,7 +23,7 @@ export default function Chat() {
     setMessages((m) => [...m, { role: "user", text }]);
     setBusy(true);
     try {
-      const res = await postChat(text, session.email, "chat");
+      const res = await postChat(text, session.username, "chat");
       const reply = res.holding
         ? `We're holding ${res.ticket_number} for a human reviewer. You'll see it in the Admin Dashboard approval queue.`
         : res.resolution || "Resolved.";

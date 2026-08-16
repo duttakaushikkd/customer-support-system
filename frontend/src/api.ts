@@ -12,7 +12,14 @@ async function request<T>(path: string, init: RequestInit = {}, auth = true): Pr
   const res = await fetch(`${API}${path}`, { ...init, headers });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(text || res.statusText);
+    let message = text || res.statusText;
+    try {
+      const parsed = JSON.parse(text);
+      if (typeof parsed?.detail === "string") message = parsed.detail;
+    } catch {
+      /* keep raw body */
+    }
+    throw new Error(message);
   }
   return res.json() as Promise<T>;
 }
@@ -88,13 +95,31 @@ export type Ticket = {
   resolution?: string;
 };
 
-export async function login(email: string, password: string) {
+export async function login(username: string, password: string) {
   return request<{
     access_token: string;
     role: "admin" | "customer";
-    email: string;
+    username: string;
+    email?: string | null;
     name: string;
-  }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }, false);
+  }>("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }, false);
+}
+
+export async function register(username: string, password: string, display_name?: string) {
+  return request<{
+    access_token: string;
+    role: "admin" | "customer";
+    username: string;
+    email?: string | null;
+    name: string;
+  }>(
+    "/auth/register",
+    {
+      method: "POST",
+      body: JSON.stringify({ username, password, display_name: display_name || undefined }),
+    },
+    false
+  );
 }
 
 export async function postChat(message: string, user_id: string, channel = "chat") {

@@ -14,8 +14,15 @@ router = APIRouter()
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    username: str | None = None
+    email: str | None = None
     password: str
+
+
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
+    display_name: str | None = None
 
 
 class ChatRequest(BaseModel):
@@ -56,26 +63,33 @@ def _build_ticket_response(state: TicketState) -> dict[str, Any]:
     }
 
 
+@router.post("/auth/register")
+def register(payload: RegisterRequest) -> dict:
+    from app.services.auth import auth_response, register_user
+
+    try:
+        user = register_user(payload.username, payload.password, payload.display_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return auth_response(user)
+
+
 @router.post("/auth/login")
 def login(payload: LoginRequest) -> dict:
-    from app.services.auth import authenticate, create_token
+    from app.services.auth import auth_response, authenticate
 
-    user = authenticate(payload.email, payload.password)
+    identifier = payload.username or payload.email
+    if not identifier:
+        raise HTTPException(status_code=400, detail="Username is required")
+    user = authenticate(identifier, payload.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    token = create_token(user)
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "role": user["role"],
-        "email": user["email"],
-        "name": user["display_name"],
-    }
+    return auth_response(user)
 
 
 @router.post("/api/chat")
 def chat(payload: ChatRequest, user: Annotated[dict, Depends(get_current_user)]) -> dict:
-    customer_id = payload.user_id or user["sub"]
+    customer_id = payload.user_id or user.get("username") or user["sub"]
     state = TicketState(
         channel="chat" if payload.channel in {"chat", "portal"} else "chat",
         customer_id=customer_id,
