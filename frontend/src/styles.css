@@ -49,6 +49,9 @@ main { padding: 1.2rem 1.4rem 2rem; }
 }
 .login-wrap { min-height: 100vh; display: grid; place-items: center; }
 .login-card { width: min(420px, 92vw); display: grid; gap: 0.7rem; }
+.mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+.mode-toggle button { background: #10161c; color: var(--muted); }
+.mode-toggle button.active { background: var(--accent); color: #041018; }
 label { display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--muted); }
 .muted { color: var(--muted); }
 .error { color: var(--danger); }

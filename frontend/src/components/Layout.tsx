@@ -14,7 +14,7 @@ export default function Layout() {
           {session?.role === "admin" && <NavLink to="/admin">Admin Dashboard</NavLink>}
         </nav>
         <div className="session">
-          <span>{session?.name}</span>
+          <span>{session?.name || session?.username}</span>
           <button
             className="linkish"
             onClick={() => {

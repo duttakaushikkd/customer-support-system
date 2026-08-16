@@ -48,7 +48,8 @@ def ensure_indexes() -> None:
     tickets().create_index([("updated_at", DESCENDING)])
     tickets().create_index("customer_id")
     tickets().create_index("status")
-    users().create_index("email", unique=True)
+    users().create_index("email", unique=True, sparse=True)
+    users().create_index("username", unique=True, sparse=True)
     audit_log().create_index([("ticket_id", ASCENDING), ("at", DESCENDING)])
     kb_articles().create_index("article_id", unique=True)
 
